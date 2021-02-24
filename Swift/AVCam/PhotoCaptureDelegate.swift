@@ -29,6 +29,8 @@ class PhotoCaptureProcessor: NSObject {
     
     private var semanticSegmentationMatteDataArray = [Data]()
     
+    private var depthMap : Data?
+    
     private var maxPhotoProcessingTime: CMTime?
     
     init(with requestedPhotoSettings: AVCapturePhotoSettings,
@@ -156,6 +158,25 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
                                                                   format: .RGBA8,
                                                                   colorSpace: perceptualColorSpace,
                                                                   options: [.portraitEffectsMatteImage: portraitEffectsMatteImage])
+            //create depth map
+            if let depthData = photo.depthData {
+                let depthDataMap = depthData.depthDataMap
+                let depthDataType = depthData.depthDataType
+                let depthDataQuality = depthData.depthDataQuality
+                let depthDataAccuracy = depthData.depthDataAccuracy
+                print("Accuracy" , depthDataAccuracy.rawValue)
+                print("Type", depthDataType)
+                print("Quality" , depthDataQuality.rawValue)
+                depthDataMap.saveRawToFile()              
+                depthDataMap.normalize(mask:portraitEffectsMattePixelBuffer)
+                let ciImage = CIImage(cvPixelBuffer: depthDataMap)
+                guard let perceptualColorSpace = CGColorSpace(name: CGColorSpace.linearGray) else { return }
+                guard let imageData = context.pngRepresentation(of: ciImage,
+                                                                 format: .Lf,
+                                                                 colorSpace: perceptualColorSpace,
+                                                                 options: [.depthImage: ciImage]) else { return }
+                depthMap = imageData
+            }
         } else {
             portraitEffectsMatteData = nil
         }
@@ -163,6 +184,7 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
         for semanticSegmentationType in output.enabledSemanticSegmentationMatteTypes {
             handleMatteData(photo, ssmType: semanticSegmentationType)
         }
+
     }
     
     /// - Tag: DidFinishRecordingLive
@@ -221,6 +243,13 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
                         let creationRequest = PHAssetCreationRequest.forAsset()
                         creationRequest.addResource(with: .photo,
                                                     data: semanticSegmentationMatteData,
+                                                    options: nil)
+                    }
+                    // save the depth map
+                    if let depthData = self.depthMap {
+                        let creationRequest = PHAssetCreationRequest.forAsset()
+                        creationRequest.addResource(with: .photo,
+                                                    data: depthData,
                                                     options: nil)
                     }
                     

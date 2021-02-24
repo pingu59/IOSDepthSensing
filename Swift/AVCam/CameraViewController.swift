@@ -190,6 +190,10 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
     
     private var setupResult: SessionSetupResult = .success
     
+    @IBOutlet weak var illuminationMode: UISegmentedControl!
+    @IBOutlet weak var view_black: UIView!
+    @IBOutlet weak var view_white: UIView!
+    
     @objc dynamic var videoDeviceInput: AVCaptureDeviceInput!
     
     @IBOutlet private weak var previewView: PreviewView!
@@ -210,26 +214,34 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
         session.sessionPreset = .photo
         
         // Add video input.
-        do {
-            var defaultVideoDevice: AVCaptureDevice?
-            
+        do {            
             // Choose the back dual camera, if available, otherwise default to a wide angle camera.
             
-            if let dualCameraDevice = AVCaptureDevice.default(.builtInDualCamera, for: .video, position: .back) {
-                defaultVideoDevice = dualCameraDevice
-            } else if let backCameraDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) {
-                // If a rear dual camera is not available, default to the rear wide angle camera.
-                defaultVideoDevice = backCameraDevice
-            } else if let frontCameraDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) {
-                // If the rear wide angle camera isn't available, default to the front wide angle camera.
-                defaultVideoDevice = frontCameraDevice
+            guard let videoDevice = AVCaptureDevice.default(.builtInTrueDepthCamera,
+                for: .video, position: .unspecified)
+                else { fatalError("No true depth camera.") }
+            do{
+                try videoDevice.lockForConfiguration()
+            }catch{
+                print("Unable to lock the device config")
             }
-            guard let videoDevice = defaultVideoDevice else {
-                print("Default video device is unavailable.")
-                setupResult = .configurationFailed
-                session.commitConfiguration()
-                return
-            }
+            // Select a depth (not disparity) format that works with the active color format.
+            let availableFormats = videoDevice.activeFormat.supportedDepthDataFormats
+
+            let depthFormat = availableFormats.filter { format in
+                let pixelFormatType =
+                    CMFormatDescriptionGetMediaSubType(format.formatDescription)
+//                print(pixelFormatType  == kCVPixelFormatType_DepthFloat16)
+//                print(pixelFormatType  == kCVPixelFormatType_DepthFloat32) THIS ONE
+//                print("========")
+                return (pixelFormatType == kCVPixelFormatType_DepthFloat16 ||
+                        pixelFormatType == kCVPixelFormatType_DepthFloat32)
+            }.first
+
+            // Set the capture device to use that depth format.
+            videoDevice.activeDepthDataFormat = depthFormat
+            videoDevice.unlockForConfiguration()
+            
             let videoDeviceInput = try AVCaptureDeviceInput(device: videoDevice)
             
             if session.canAddInput(videoDeviceInput) {
@@ -598,6 +610,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
     
     private var inProgressPhotoCaptureDelegates = [Int64: PhotoCaptureProcessor]()
     
+    
     @IBOutlet private weak var photoButton: UIButton!
     
     /// - Tag: CapturePhoto
@@ -620,9 +633,9 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                 photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.hevc])
             }
             
-            if self.videoDeviceInput.device.isFlashAvailable {
-                photoSettings.flashMode = .auto
-            }
+//            if self.videoDeviceInput.device.isFlashAvailable {
+            photoSettings.flashMode = AVCaptureDevice.FlashMode.off
+//            }
             
             photoSettings.isHighResolutionPhotoEnabled = true
             if !photoSettings.__availablePreviewPhotoPixelFormatTypes.isEmpty {
@@ -651,10 +664,45 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             
             let photoCaptureProcessor = PhotoCaptureProcessor(with: photoSettings, willCapturePhotoAnimation: {
                 // Flash the screen to signal that AVCam took a photo.
+                //Insert the lighting thingy here
                 DispatchQueue.main.async {
-                    self.previewView.videoPreviewLayer.opacity = 0
-                    UIView.animate(withDuration: 0.25) {
-                        self.previewView.videoPreviewLayer.opacity = 1
+                    let screenSize: CGRect = UIScreen.main.bounds
+                    let screenWidth = screenSize.width
+                    let screenHeight = screenSize.height
+                    var w = screenWidth
+                    var h = screenHeight
+                    var white_x : CGFloat = 0
+                    var white_y : CGFloat = 0
+                    var black_x : CGFloat = 0
+                    var black_y : CGFloat = 0
+                    switch self.illuminationMode.selectedSegmentIndex
+                    {
+                    case 0 :
+                        black_x = w/2
+                        w = w/2
+                    case 1 :
+                        white_x = w/2
+                        w = w/2
+                    case 2 :
+                        black_y = h/2
+                        h = h/2
+                    case 3:
+                        white_y = h/2
+                        h = h/2
+                    default:
+                        break
+                    }
+                    self.view_black.frame = CGRect(x: black_x, y: black_y, width: w, height: h)
+                    self.view_white.frame = CGRect(x: white_x, y: white_y, width: w, height: h)
+                    self.view_black.alpha = 1
+                    self.view_white.alpha = 1
+//                    self.previewView.videoPreviewLayer.opacity = 0
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) { // Change 
+                        UIView.performWithoutAnimation {
+                            self.view_black.alpha = 0
+                            self.view_white.alpha = 0
+    //                        self.previewView.videoPreviewLayer.opacity = 1
+                        }
                     }
                 }
             }, livePhotoCaptureHandler: { capturing in
