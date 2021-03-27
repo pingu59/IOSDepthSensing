@@ -8,6 +8,7 @@ The app's primary view controller that presents the camera interface.
 import UIKit
 import AVFoundation
 import Photos
+import Dispatch
 
 class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelegate, ItemSelectionViewControllerDelegate {
     
@@ -193,7 +194,6 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
     @IBOutlet weak var illuminationMode: UISegmentedControl!
     @IBOutlet weak var view_black: UIView!
     @IBOutlet weak var view_white: UIView!
-    
     @objc dynamic var videoDeviceInput: AVCaptureDeviceInput!
     
     @IBOutlet private weak var previewView: PreviewView!
@@ -614,7 +614,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
     @IBOutlet private weak var photoButton: UIButton!
     
     /// - Tag: CapturePhoto
-    @IBAction private func capturePhoto(_ photoButton: UIButton) {
+    private func capturePhoto_(_ photoButton: UIButton, im: Int? = nil, semaphore: DispatchSemaphore, fin: DispatchSemaphore) {
         /*
          Retrieve the video preview layer's video orientation on the main queue before
          entering the session queue. Do this to ensure that UI elements are accessed on
@@ -661,11 +661,10 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             }
             
             photoSettings.photoQualityPrioritization = self.photoQualityPrioritizationMode
-            
             let photoCaptureProcessor = PhotoCaptureProcessor(with: photoSettings, willCapturePhotoAnimation: {
                 // Flash the screen to signal that AVCam took a photo.
-                //Insert the lighting thingy here
                 DispatchQueue.main.async {
+                    let illuminationMode = im ?? self.illuminationMode.selectedSegmentIndex
                     let screenSize: CGRect = UIScreen.main.bounds
                     let screenWidth = screenSize.width
                     let screenHeight = screenSize.height
@@ -675,7 +674,8 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                     var white_y : CGFloat = 0
                     var black_x : CGFloat = 0
                     var black_y : CGFloat = 0
-                    switch self.illuminationMode.selectedSegmentIndex
+                    print(illuminationMode)
+                    switch illuminationMode
                     {
                     case 0 :
                         black_x = w/2
@@ -696,14 +696,6 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                     self.view_white.frame = CGRect(x: white_x, y: white_y, width: w, height: h)
                     self.view_black.alpha = 1
                     self.view_white.alpha = 1
-//                    self.previewView.videoPreviewLayer.opacity = 0
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) { // Change 
-                        UIView.performWithoutAnimation {
-                            self.view_black.alpha = 0
-                            self.view_white.alpha = 0
-    //                        self.previewView.videoPreviewLayer.opacity = 1
-                        }
-                    }
                 }
             }, livePhotoCaptureHandler: { capturing in
                 self.sessionQueue.async {
@@ -726,6 +718,13 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                 }
             }, completionHandler: { photoCaptureProcessor in
                 // When the capture is complete, remove a reference to the photo capture delegate so it can be deallocated.
+                semaphore.signal()
+                DispatchQueue.main.async {
+                    let illuminationMode = im ?? self.illuminationMode.selectedSegmentIndex
+                    if im == nil || illuminationMode == 3{
+                        fin.signal()
+                    }
+                }
                 self.sessionQueue.async {
                     self.inProgressPhotoCaptureDelegates[photoCaptureProcessor.requestedPhotoSettings.uniqueID] = nil
                 }
@@ -746,6 +745,39 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             // The photo output holds a weak reference to the photo capture delegate and stores it in an array to maintain a strong reference.
             self.inProgressPhotoCaptureDelegates[photoCaptureProcessor.requestedPhotoSettings.uniqueID] = photoCaptureProcessor
             self.photoOutput.capturePhoto(with: photoSettings, delegate: photoCaptureProcessor)
+        }
+    }
+    @IBOutlet weak var autoIlluminationMode: UISegmentedControl!
+    @IBAction private func capturePhoto(_ photoButton: UIButton) {
+        let semaphore = DispatchSemaphore(value: 0)
+        let fin = DispatchSemaphore(value: 0)
+        switch self.autoIlluminationMode.selectedSegmentIndex
+        {
+        case 0 :
+            DispatchQueue.global().async {
+                for i in 0...3{
+                    DispatchQueue.main.async {
+                        self.capturePhoto_(photoButton, im: i, semaphore: semaphore, fin: fin)
+                    }
+                    semaphore.wait()
+                }
+            }
+        case 1 :
+            capturePhoto_(photoButton, semaphore: semaphore, fin: fin)
+            DispatchQueue.global().async {
+                semaphore.wait()
+            }
+        default:
+            break
+        }
+        DispatchQueue.global().async() {
+            fin.wait()
+            DispatchQueue.main.async {
+                print("here")
+                self.view_black.alpha = 0
+                self.view_white.alpha = 0
+            
+            }
         }
     }
     

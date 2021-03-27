@@ -99,7 +99,7 @@ extension CVPixelBuffer {
           }
             depths += "\n"
         }
-        print(self.documentDirectory())
+//        print(self.documentDirectory())
         self.save(text: depths,
                   toDirectory: self.documentDirectory(),
                   withFileName: fileName)
@@ -110,8 +110,8 @@ extension CVPixelBuffer {
     func normalize(mask:CVPixelBuffer) {
     let width = CVPixelBufferGetWidth(self)
     let height = CVPixelBufferGetHeight(self)
-    self.printDebugInfo()
-    mask.printDebugInfo()
+//    self.printDebugInfo()
+//    mask.printDebugInfo()
     CVPixelBufferLockBaseAddress(self, CVPixelBufferLockFlags(rawValue: 0));
     let floatBuffer = unsafeBitCast(CVPixelBufferGetBaseAddress(self), to: UnsafeMutablePointer<float16_t>.self)
     CVPixelBufferLockBaseAddress(mask, CVPixelBufferLockFlags(rawValue: 0));

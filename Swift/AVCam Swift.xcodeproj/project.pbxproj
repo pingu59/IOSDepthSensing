@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -16,6 +16,7 @@
 		7AA677271CFF774800B353FB /* PhotoCaptureDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA677261CFF774800B353FB /* PhotoCaptureDelegate.swift */; };
 		7AA677291CFF7B5C00B353FB /* PreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA677281CFF7B5C00B353FB /* PreviewView.swift */; };
 		ED5844402592601F00CEC874 /* CVPixelBufferExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED58443F2592601F00CEC874 /* CVPixelBufferExtension.swift */; };
+		ED90BE36260BA9E600B3D58A /* Atomics in Frameworks */ = {isa = PBXBuildFile; productRef = ED90BE35260BA9E600B3D58A /* Atomics */; };
 		EDB2F84025CACE980002D44F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EDB2F83E25CACE980002D44F /* Main.storyboard */; };
 /* End PBXBuildFile section */
 
@@ -41,6 +42,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ED90BE36260BA9E600B3D58A /* Atomics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -116,6 +118,9 @@
 			dependencies = (
 			);
 			name = AVCam;
+			packageProductDependencies = (
+				ED90BE35260BA9E600B3D58A /* Atomics */,
+			);
 			productName = AVCam;
 			productReference = 7AA677111CFF765600B353FB /* AVCam.app */;
 			productType = "com.apple.product-type.application";
@@ -147,6 +152,9 @@
 				Base,
 			);
 			mainGroup = 7AA677081CFF765500B353FB;
+			packageReferences = (
+				ED90BE34260BA9E600B3D58A /* XCRemoteSwiftPackageReference "swift-atomics" */,
+			);
 			productRefGroup = 7AA677121CFF765600B353FB /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -314,7 +322,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -330,7 +339,10 @@
 				DEVELOPMENT_TEAM = K5HV45Y25P;
 				INFOPLIST_FILE = AVCam/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.example.apple-samplecode.AVCam${SAMPLE_CODE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -349,7 +361,10 @@
 				DEVELOPMENT_TEAM = K5HV45Y25P;
 				INFOPLIST_FILE = AVCam/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.example.apple-samplecode.AVCam${SAMPLE_CODE_DISAMBIGUATOR}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -381,6 +396,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		ED90BE34260BA9E600B3D58A /* XCRemoteSwiftPackageReference "swift-atomics" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-atomics.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.0.3;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		ED90BE35260BA9E600B3D58A /* Atomics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ED90BE34260BA9E600B3D58A /* XCRemoteSwiftPackageReference "swift-atomics" */;
+			productName = Atomics;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 7AA677091CFF765500B353FB /* Project object */;
 }
