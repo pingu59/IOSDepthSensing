@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14750" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
-    <device id="retina5_9" orientation="landscape">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="retina5_9" orientation="landscape" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14710.2"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -19,6 +19,30 @@
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3eR-Rn-XpZ" userLabel="Preview" customClass="PreviewView" customModule="AVCam" customModuleProvider="target">
                                 <rect key="frame" x="44" y="0.0" width="724" height="375"/>
+                                <subviews>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="d82-bY-ok2">
+                                        <rect key="frame" x="221" y="265" width="283" height="32"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <segments>
+                                            <segment title="Left"/>
+                                            <segment title="Right"/>
+                                            <segment title="Top"/>
+                                            <segment title="Down"/>
+                                        </segments>
+                                        <color key="selectedSegmentTintColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </segmentedControl>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="LmH-E4-q8U">
+                                        <rect key="frame" x="150" y="304" width="427" height="32"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <segments>
+                                            <segment title="Auto BInary"/>
+                                            <segment title="Manual Binary"/>
+                                            <segment title="Stereo"/>
+                                            <segment title="AutoBoth"/>
+                                        </segments>
+                                        <color key="selectedSegmentTintColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </segmentedControl>
+                                </subviews>
                                 <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <gestureRecognizers/>
                                 <connections>
@@ -27,6 +51,7 @@
                             </view>
                             <segmentedControl opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="FAC-co-10c" userLabel="Capture Mode">
                                 <rect key="frame" x="560" y="165.66666666666666" width="88" height="45"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="44" id="AHK-CJ-BHq"/>
                                     <constraint firstAttribute="width" secondItem="FAC-co-10c" secondAttribute="height" multiplier="80:40" id="T01-Tu-2SF"/>
@@ -35,6 +60,7 @@
                                     <segment title="" image="PhotoSelector"/>
                                     <segment title="" image="MovieSelector"/>
                                 </segments>
+                                <color key="tintColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
                                     <action selector="toggleCaptureMode:" destination="BYZ-38-t0r" eventType="valueChanged" id="SKd-67-ZHh"/>
                                 </connections>
@@ -51,13 +77,13 @@
                                 </userDefinedRuntimeAttributes>
                             </label>
                             <label hidden="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Camera Unavailable" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zf0-db-esM" userLabel="Camera Unavailable">
-                                <rect key="frame" x="304" y="173.33333333333334" width="204" height="28.666666666666657"/>
+                                <rect key="frame" x="302.66666666666669" y="173.33333333333334" width="207" height="28.666666666666657"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="24"/>
                                 <color key="textColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FZr-Ip-7WL" userLabel="Resume">
-                                <rect key="frame" x="324" y="168" width="164" height="39"/>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FZr-Ip-7WL" userLabel="Resume">
+                                <rect key="frame" x="323.66666666666669" y="168" width="165" height="39"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="24"/>
                                 <inset key="contentEdgeInsets" minX="10" minY="5" maxX="10" maxY="5"/>
                                 <state key="normal" title="Tap to resume">
@@ -74,6 +100,7 @@
                             </button>
                             <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eRT-dK-6dM" userLabel="Record">
                                 <rect key="frame" x="668" y="274" width="60" height="60"/>
+                                <color key="tintColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <state key="normal" image="CaptureVideo">
                                     <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </state>
@@ -92,6 +119,7 @@
                                     <constraint firstAttribute="height" constant="60" id="NtC-UN-gTs"/>
                                     <constraint firstAttribute="width" constant="60" id="dxU-UP-4Ae"/>
                                 </constraints>
+                                <color key="tintColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <state key="normal" image="CapturePhoto">
                                     <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </state>
@@ -106,6 +134,7 @@
                             </button>
                             <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rUJ-G6-RPv" userLabel="Camera">
                                 <rect key="frame" x="668" y="20" width="60" height="60"/>
+                                <color key="tintColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <state key="normal" image="FlipCamera">
                                     <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </state>
@@ -119,7 +148,7 @@
                                 </connections>
                             </button>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="1" translatesAutoresizingMaskIntoConstraints="NO" id="qQa-JZ-xq2">
-                                <rect key="frame" x="300" y="10" width="212" height="26"/>
+                                <rect key="frame" x="291" y="10" width="230" height="26"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="25" id="5Jk-fK-ABH"/>
                                 </constraints>
@@ -128,6 +157,8 @@
                                     <segment title="Balanced"/>
                                     <segment title="Quality"/>
                                 </segments>
+                                <color key="tintColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="selectedSegmentTintColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <connections>
                                     <action selector="togglePhotoQualityPrioritizationMode:" destination="BYZ-38-t0r" eventType="valueChanged" id="gE0-U8-CTj"/>
                                 </connections>
@@ -138,6 +169,7 @@
                                     <constraint firstAttribute="height" constant="50" id="T0U-cL-mMw"/>
                                     <constraint firstAttribute="width" constant="50" id="fxH-PQ-9nB"/>
                                 </constraints>
+                                <color key="tintColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <state key="normal" image="ssm"/>
                                 <connections>
                                     <action selector="toggleSemanticSegmentationMatteDeliveryMode:" destination="BYZ-38-t0r" eventType="touchUpInside" id="ELj-Aq-qbO"/>
@@ -149,6 +181,7 @@
                                     <constraint firstAttribute="width" constant="50" id="15L-jw-KI1"/>
                                     <constraint firstAttribute="height" constant="50" id="Rhs-tx-wuW"/>
                                 </constraints>
+                                <color key="tintColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <state key="normal" image="PortraitMatteON"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
@@ -165,6 +198,7 @@
                                     <constraint firstAttribute="height" constant="50" id="DBZ-an-hCH"/>
                                     <constraint firstAttribute="width" constant="50" id="txq-sa-50i"/>
                                 </constraints>
+                                <color key="tintColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <state key="normal" image="DepthON"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
@@ -175,12 +209,19 @@
                                     <action selector="toggleDepthDataDeliveryMode:" destination="BYZ-38-t0r" eventType="touchUpInside" id="iSb-YO-MyR"/>
                                 </connections>
                             </button>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ca2-vs-zFf">
+                                <rect key="frame" x="401" y="183" width="10" height="10"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" systemColor="systemRedColor"/>
+                                <color key="tintColor" systemColor="systemPinkColor"/>
+                            </view>
                             <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eI6-gV-W7d" userLabel="Live Photo Mode">
                                 <rect key="frame" x="64" y="274" width="50" height="50"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="50" id="2OH-VU-h0R"/>
                                     <constraint firstAttribute="height" constant="50" id="XXa-hm-qsq"/>
                                 </constraints>
+                                <color key="tintColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <state key="normal" image="LivePhotoON"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
@@ -191,7 +232,18 @@
                                     <action selector="toggleLivePhotoMode:" destination="BYZ-38-t0r" eventType="touchUpInside" id="JqX-wJ-Xf1"/>
                                 </connections>
                             </button>
+                            <view opaque="NO" alpha="0.0" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gZ5-ep-QM9">
+                                <rect key="frame" x="286" y="123" width="240" height="128"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
+                            <view alpha="0.0" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RpU-bu-vFu">
+                                <rect key="frame" x="286" y="123" width="240" height="128"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </view>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="nyU-fN-aJh"/>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="k2e-iy-hZx" firstAttribute="top" secondItem="9i1-NX-Qxg" secondAttribute="top" id="6s5-Ib-dPR"/>
@@ -267,7 +319,6 @@
                             </constraint>
                             <constraint firstItem="k2e-iy-hZx" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="zDr-9x-9rD"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="nyU-fN-aJh"/>
                         <variation key="default">
                             <mask key="constraints">
                                 <exclude reference="GXb-vB-gbM"/>
@@ -275,7 +326,12 @@
                                 <exclude reference="b0r-sh-cwd"/>
                                 <exclude reference="dt1-Ck-Uqd"/>
                                 <exclude reference="vVo-dd-B0t"/>
-                                <exclude reference="Pm4-eO-sdY"/>
+                                <exclude reference="Gy0-BP-eeb"/>
+                                <exclude reference="Ko6-t1-Mqg"/>
+                                <exclude reference="Ldv-XY-Yhm"/>
+                                <exclude reference="T1n-3y-nKc"/>
+                                <exclude reference="cwj-yp-4Cv"/>
+                                <exclude reference="jNG-AT-7Uc"/>
                                 <exclude reference="EMU-8C-9iA"/>
                                 <exclude reference="GBQ-Hx-JcI"/>
                                 <exclude reference="Ohu-qM-uxp"/>
@@ -286,20 +342,15 @@
                                 <exclude reference="zDr-9x-9rD"/>
                                 <exclude reference="pd7-Dh-d2e"/>
                                 <exclude reference="q6Y-ZM-hP8"/>
+                                <exclude reference="Pm4-eO-sdY"/>
                                 <exclude reference="kgV-F4-efV"/>
-                                <exclude reference="Gy0-BP-eeb"/>
-                                <exclude reference="Ko6-t1-Mqg"/>
-                                <exclude reference="Ldv-XY-Yhm"/>
-                                <exclude reference="T1n-3y-nKc"/>
-                                <exclude reference="cwj-yp-4Cv"/>
-                                <exclude reference="jNG-AT-7Uc"/>
                                 <exclude reference="ri1-er-H3p"/>
+                                <exclude reference="7cz-Yw-dIv"/>
+                                <exclude reference="WGW-f8-ThP"/>
                                 <exclude reference="ME7-or-Zz6"/>
                                 <exclude reference="UzJ-4k-n11"/>
                                 <exclude reference="ZGJ-Ly-Ppb"/>
                                 <exclude reference="rkp-su-C5H"/>
-                                <exclude reference="7cz-Yw-dIv"/>
-                                <exclude reference="WGW-f8-ThP"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=compact">
@@ -310,23 +361,24 @@
                                 <exclude reference="eWs-co-Aaz"/>
                                 <exclude reference="m8a-cF-Rf0"/>
                                 <include reference="vVo-dd-B0t"/>
-                                <exclude reference="OfR-mz-BO3"/>
-                                <include reference="Pm4-eO-sdY"/>
                                 <exclude reference="6s5-Ib-dPR"/>
                                 <include reference="EMU-8C-9iA"/>
                                 <exclude reference="lKh-gu-ie2"/>
                                 <exclude reference="zDr-9x-9rD"/>
-                                <include reference="jBb-7k-Hkv"/>
                                 <exclude reference="SNY-VC-ohk"/>
                                 <exclude reference="ny4-fB-wQH"/>
                                 <include reference="pd7-Dh-d2e"/>
                                 <include reference="q6Y-ZM-hP8"/>
                                 <exclude reference="qVc-EN-il5"/>
+                                <exclude reference="OfR-mz-BO3"/>
+                                <include reference="Pm4-eO-sdY"/>
+                                <include reference="jBb-7k-Hkv"/>
                                 <include reference="kgV-F4-efV"/>
                                 <exclude reference="sNQ-wG-QKR"/>
                                 <exclude reference="Oow-A6-mDp"/>
                                 <include reference="ri1-er-H3p"/>
-                                <exclude reference="cCX-ki-9gT"/>
+                                <include reference="7cz-Yw-dIv"/>
+                                <include reference="WGW-f8-ThP"/>
                                 <include reference="ME7-or-Zz6"/>
                                 <exclude reference="NFm-e8-abT"/>
                                 <include reference="UzJ-4k-n11"/>
@@ -334,48 +386,49 @@
                                 <exclude reference="aSR-Je-0lW"/>
                                 <exclude reference="bQd-ro-0Hw"/>
                                 <include reference="rkp-su-C5H"/>
-                                <include reference="7cz-Yw-dIv"/>
-                                <include reference="WGW-f8-ThP"/>
+                                <exclude reference="cCX-ki-9gT"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=compact-widthClass=compact">
                             <mask key="constraints">
-                                <include reference="kfM-Ob-SDr"/>
                                 <include reference="Gy0-BP-eeb"/>
                                 <include reference="T1n-3y-nKc"/>
+                                <include reference="kfM-Ob-SDr"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=compact-widthClass=regular">
                             <mask key="constraints">
-                                <include reference="Ohu-qM-uxp"/>
-                                <include reference="khB-QW-SIe"/>
                                 <include reference="Ko6-t1-Mqg"/>
                                 <include reference="Ldv-XY-Yhm"/>
+                                <include reference="Ohu-qM-uxp"/>
+                                <include reference="khB-QW-SIe"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=compact">
                             <mask key="constraints">
                                 <include reference="GXb-vB-gbM"/>
-                                <include reference="GBQ-Hx-JcI"/>
                                 <include reference="cwj-yp-4Cv"/>
+                                <include reference="GBQ-Hx-JcI"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=regular">
                             <mask key="constraints">
                                 <include reference="dt1-Ck-Uqd"/>
-                                <include reference="qD6-Cf-JXh"/>
                                 <include reference="jNG-AT-7Uc"/>
+                                <include reference="qD6-Cf-JXh"/>
                             </mask>
                         </variation>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout"/>
                     <nil key="simulatedStatusBarMetrics"/>
                     <connections>
+                        <outlet property="autoIlluminationMode" destination="LmH-E4-q8U" id="aaI-wf-K7W"/>
                         <outlet property="cameraButton" destination="rUJ-G6-RPv" id="dAV-WS-N1p"/>
                         <outlet property="cameraUnavailableLabel" destination="zf0-db-esM" id="P9W-lb-Pb8"/>
                         <outlet property="captureModeControl" destination="FAC-co-10c" id="KXj-wg-BvS"/>
                         <outlet property="capturingLivePhotoLabel" destination="Pii-2r-R2l" id="JAa-4l-5SD"/>
                         <outlet property="depthDataDeliveryButton" destination="9i1-NX-Qxg" id="The-P3-y3W"/>
+                        <outlet property="illuminationMode" destination="d82-bY-ok2" id="ipl-CV-d9e"/>
                         <outlet property="livePhotoModeButton" destination="eI6-gV-W7d" id="r9f-cN-YSH"/>
                         <outlet property="photoButton" destination="uCj-6P-mHF" id="Ha8-ua-hxy"/>
                         <outlet property="photoQualityPrioritizationSegControl" destination="qQa-JZ-xq2" id="pLH-JJ-m0W"/>
@@ -384,6 +437,8 @@
                         <outlet property="recordButton" destination="eRT-dK-6dM" id="iqk-en-NsW"/>
                         <outlet property="resumeButton" destination="FZr-Ip-7WL" id="tX5-Sx-rQK"/>
                         <outlet property="semanticSegmentationMatteDeliveryButton" destination="Kbl-qj-uoj" id="87J-v0-dUz"/>
+                        <outlet property="view_black" destination="gZ5-ep-QM9" id="4R6-BT-tl2"/>
+                        <outlet property="view_white" destination="RpU-bu-vFu" id="vWJ-3W-RuX"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -393,9 +448,10 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="-656" y="-630"/>
+            <point key="canvasLocation" x="-656.1576354679803" y="-631.20000000000005"/>
         </scene>
     </scenes>
+    <color key="tintColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
     <resources>
         <image name="CapturePhoto" width="150" height="150"/>
         <image name="CaptureVideo" width="150" height="150"/>
@@ -406,6 +462,14 @@
         <image name="PhotoSelector" width="72" height="72"/>
         <image name="PortraitMatteON" width="150" height="150"/>
         <image name="ssm" width="145" height="150"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemPinkColor">
+            <color red="1" green="0.17647058823529413" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemRedColor">
+            <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
     </resources>
-    <color key="tintColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
 </document>

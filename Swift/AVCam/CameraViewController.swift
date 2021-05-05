@@ -614,7 +614,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
     @IBOutlet private weak var photoButton: UIButton!
     
     /// - Tag: CapturePhoto
-    private func capturePhoto_(_ photoButton: UIButton, im: Int? = nil, semaphore: DispatchSemaphore, fin: DispatchSemaphore) {
+    private func capturePhoto_(_ photoButton: UIButton, im: Int? = nil, semaphore: DispatchSemaphore, fin: DispatchSemaphore, change_alpha : Int? = nil) {
         /*
          Retrieve the video preview layer's video orientation on the main queue before
          entering the session queue. Do this to ensure that UI elements are accessed on
@@ -668,8 +668,10 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                     let screenSize: CGRect = UIScreen.main.bounds
                     let screenWidth = screenSize.width
                     let screenHeight = screenSize.height
-                    var w = screenWidth
-                    var h = screenHeight
+                    var white_w = screenWidth
+                    var white_h = screenHeight
+                    var black_w = screenWidth
+                    var black_h = screenHeight
                     var white_x : CGFloat = 0
                     var white_y : CGFloat = 0
                     var black_x : CGFloat = 0
@@ -678,22 +680,40 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                     switch illuminationMode
                     {
                     case 0 :
-                        black_x = w/2
-                        w = w/2
+                        black_x = screenWidth/2
+                        white_w = screenWidth/2
+                        black_w = screenWidth/2
                     case 1 :
-                        white_x = w/2
-                        w = w/2
+                        white_x = screenWidth/2
+                        white_w = screenWidth/2
+                        black_w = screenWidth/2
                     case 2 :
-                        black_y = h/2
-                        h = h/2
+                        black_y = screenHeight/2
+                        white_h = screenHeight/2
+                        black_h = screenHeight/2
                     case 3:
-                        white_y = h/2
-                        h = h/2
+                        white_y = screenHeight/2
+                        white_h = screenHeight/2
+                        black_h = screenHeight/2
+                    case 4:
+                        white_h = screenWidth/3
+                        white_w = screenWidth/3
+                        white_x = screenWidth - white_h
+                    case 5:
+                        white_h = screenWidth/3
+                        white_w = screenWidth/3
+                        white_x = 0
+                        white_y = screenHeight/3
+                    case 6:
+                        white_h = screenWidth/3
+                        white_w = screenWidth/3
+                        white_x = screenWidth/3
+                        white_y = screenHeight -  screenWidth/3
                     default:
                         break
                     }
-                    self.view_black.frame = CGRect(x: black_x, y: black_y, width: w, height: h)
-                    self.view_white.frame = CGRect(x: white_x, y: white_y, width: w, height: h)
+                    self.view_black.frame = CGRect(x: black_x, y: black_y, width: black_w, height: black_h)
+                    self.view_white.frame = CGRect(x: white_x, y: white_y, width: white_w, height: white_h)
                     self.view_black.alpha = 1
                     self.view_white.alpha = 1
                 }
@@ -721,7 +741,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                 semaphore.signal()
                 DispatchQueue.main.async {
                     let illuminationMode = im ?? self.illuminationMode.selectedSegmentIndex
-                    if im == nil || illuminationMode == 3{
+                    if im == nil || illuminationMode == change_alpha{
                         fin.signal()
                     }
                 }
@@ -755,9 +775,9 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
         {
         case 0 :
             DispatchQueue.global().async {
-                for i in 0...3{
+                for i in -1...3{ //Hack. The first photo cannot guarantee to be correctly illuminated 
                     DispatchQueue.main.async {
-                        self.capturePhoto_(photoButton, im: i, semaphore: semaphore, fin: fin)
+                        self.capturePhoto_(photoButton, im: i, semaphore: semaphore, fin: fin, change_alpha: 3)
                     }
                     semaphore.wait()
                 }
@@ -767,6 +787,27 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             DispatchQueue.global().async {
                 semaphore.wait()
             }
+        case 2:
+            DispatchQueue.global().async {
+                //Hack. The first photo cannot guarantee to be correctly illuminated
+                for i in [-1, 4, 5, 6]{
+                    DispatchQueue.main.async {
+                        self.capturePhoto_(photoButton, im: i, semaphore: semaphore, fin: fin, change_alpha: 6)
+                    }
+                    semaphore.wait()
+                }
+            }
+        case 3:
+            DispatchQueue.global().async {
+                //Hack. The first photo cannot guarantee to be correctly illuminated
+                for i in -1...6{
+                    DispatchQueue.main.async {
+                        self.capturePhoto_(photoButton, im: i, semaphore: semaphore, fin: fin, change_alpha: 6)
+                    }
+                    semaphore.wait()
+                }
+            }
+            
         default:
             break
         }

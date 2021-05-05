@@ -15,9 +15,9 @@
 		7AA6771F1CFF765600B353FB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7AA6771D1CFF765600B353FB /* LaunchScreen.storyboard */; };
 		7AA677271CFF774800B353FB /* PhotoCaptureDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA677261CFF774800B353FB /* PhotoCaptureDelegate.swift */; };
 		7AA677291CFF7B5C00B353FB /* PreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AA677281CFF7B5C00B353FB /* PreviewView.swift */; };
+		ED060A8D2610C0000050BDD6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ED060A8B2610C0000050BDD6 /* Main.storyboard */; };
 		ED5844402592601F00CEC874 /* CVPixelBufferExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED58443F2592601F00CEC874 /* CVPixelBufferExtension.swift */; };
 		ED90BE36260BA9E600B3D58A /* Atomics in Frameworks */ = {isa = PBXBuildFile; productRef = ED90BE35260BA9E600B3D58A /* Atomics */; };
-		EDB2F84025CACE980002D44F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EDB2F83E25CACE980002D44F /* Main.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,8 +32,8 @@
 		7AA677261CFF774800B353FB /* PhotoCaptureDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoCaptureDelegate.swift; sourceTree = "<group>"; };
 		7AA677281CFF7B5C00B353FB /* PreviewView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreviewView.swift; sourceTree = "<group>"; };
 		D4D50724A9FAAAE2653232EA /* LICENSE.txt */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		ED060A8C2610C0000050BDD6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		ED58443F2592601F00CEC874 /* CVPixelBufferExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVPixelBufferExtension.swift; sourceTree = "<group>"; };
-		EDB2F83F25CACE980002D44F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = ../../../Downloads/AVCamBuildingACameraApp/Swift/AVCam/Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		F832D8CBECBB204152E1E99B /* SampleCode.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = SampleCode.xcconfig; path = ../Configuration/SampleCode.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -86,7 +86,7 @@
 				2C6C46E4226AF339007D07EB /* ItemSelectionViewController.swift */,
 				7AA677261CFF774800B353FB /* PhotoCaptureDelegate.swift */,
 				ED58443F2592601F00CEC874 /* CVPixelBufferExtension.swift */,
-				EDB2F83E25CACE980002D44F /* Main.storyboard */,
+				ED060A8B2610C0000050BDD6 /* Main.storyboard */,
 				7AA6771B1CFF765600B353FB /* Assets.xcassets */,
 				7AA6771D1CFF765600B353FB /* LaunchScreen.storyboard */,
 				7AA677201CFF765600B353FB /* Info.plist */,
@@ -170,7 +170,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7AA6771F1CFF765600B353FB /* LaunchScreen.storyboard in Resources */,
-				EDB2F84025CACE980002D44F /* Main.storyboard in Resources */,
+				ED060A8D2610C0000050BDD6 /* Main.storyboard in Resources */,
 				7AA6771C1CFF765600B353FB /* Assets.xcassets in Resources */,
 				7697F939217A94FB0011862B /* README.md in Resources */,
 			);
@@ -203,10 +203,10 @@
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
 		};
-		EDB2F83E25CACE980002D44F /* Main.storyboard */ = {
+		ED060A8B2610C0000050BDD6 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				EDB2F83F25CACE980002D44F /* Base */,
+				ED060A8C2610C0000050BDD6 /* Base */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
