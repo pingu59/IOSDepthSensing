@@ -20,8 +20,8 @@ class PhotoCaptureProcessor: NSObject {
     private let completionHandler: (PhotoCaptureProcessor) -> Void
     
     private let photoProcessingHandler: (Bool) -> Void
-    
-    private var photoData: Data?
+        
+    private var photoData = [Data]()
     
     private var livePhotoCompanionMovieURL: URL?
     
@@ -30,6 +30,8 @@ class PhotoCaptureProcessor: NSObject {
     private var semanticSegmentationMatteDataArray = [Data]()
     
     private var depthMap : Data?
+    
+    private var landmarkMap : Data?
     
     private var maxPhotoProcessingTime: CMTime?
     
@@ -140,10 +142,17 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
         if let error = error {
             print("Error capturing photo: \(error)")
         } else {
-            photoData = photo.fileDataRepresentation()
+            // Create a CIImage from the pixel buffer
+            let ciImage = CIImage(cvPixelBuffer: photo.pixelBuffer!)
+            guard let perceptualColorSpace = CGColorSpace(name: CGColorSpace.sRGB) else { return }
+            guard let imageData = context.heifRepresentation(of: ciImage,
+                                                             format: .BGRA8,
+                                                             colorSpace: perceptualColorSpace) else { return }
+            photoData.append(imageData)
         }
         // A portrait effects matte gets generated only if AVFoundation detects a face.
         if var portraitEffectsMatte = photo.portraitEffectsMatte {
+            
             if let orientation = photo.metadata[ String(kCGImagePropertyOrientation) ] as? UInt32 {
                 portraitEffectsMatte = portraitEffectsMatte.applyingExifOrientation(CGImagePropertyOrientation(rawValue: orientation)!)
             }
@@ -158,25 +167,6 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
                                                                   format: .RGBA8,
                                                                   colorSpace: perceptualColorSpace,
                                                                   options: [.portraitEffectsMatteImage: portraitEffectsMatteImage])
-            //create depth map
-            if let depthData = photo.depthData {
-                let depthDataMap = depthData.depthDataMap
-                let depthDataType = depthData.depthDataType
-                let depthDataQuality = depthData.depthDataQuality
-                let depthDataAccuracy = depthData.depthDataAccuracy
-                print("Accuracy" , depthDataAccuracy.rawValue)
-                print("Type", depthDataType)
-                print("Quality" , depthDataQuality.rawValue)
-                depthDataMap.saveRawToFile()              
-                depthDataMap.normalize(mask:portraitEffectsMattePixelBuffer)
-                let ciImage = CIImage(cvPixelBuffer: depthDataMap)
-                guard let perceptualColorSpace = CGColorSpace(name: CGColorSpace.linearGray) else { return }
-                guard let imageData = context.pngRepresentation(of: ciImage,
-                                                                 format: .Lf,
-                                                                 colorSpace: perceptualColorSpace,
-                                                                 options: [.depthImage: ciImage]) else { return }
-                depthMap = imageData
-            }
         } else {
             portraitEffectsMatteData = nil
         }
@@ -184,6 +174,32 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
         for semanticSegmentationType in output.enabledSemanticSegmentationMatteTypes {
             handleMatteData(photo, ssmType: semanticSegmentationType)
         }
+        
+        //The ssms can act like landmarks?
+        //create depth map
+        if let depthData = photo.depthData {
+            let depthDataMap = depthData.depthDataMap
+            let depthDataType = depthData.depthDataType
+            let depthDataQuality = depthData.depthDataQuality
+            let depthDataAccuracy = depthData.depthDataAccuracy
+            print("Accuracy" , depthDataAccuracy.rawValue)
+            print("Type", depthDataType)
+            print("Quality" , depthDataQuality.rawValue)
+            print("Instrinct", depthData.cameraCalibrationData?.intrinsicMatrix)
+            depthDataMap.saveRawToFile()
+            let ciImage = CIImage(cvPixelBuffer: depthDataMap)
+            guard let perceptualColorSpace = CGColorSpace(name: CGColorSpace.linearGray) else { return }
+            guard let imageData = context.pngRepresentation(of: ciImage,
+                                                             format: .Lf,
+                                                             colorSpace: perceptualColorSpace,
+                                                             options: [.depthImage: ciImage]) else { return }
+            depthMap = imageData
+        }
+        
+        if let photoBuffer = photo.pixelBuffer {
+            photoBuffer.detectFace() //will write to file
+        }
+        
 
     }
     
@@ -209,19 +225,38 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
             return
         }
         
-        guard let photoData = photoData else {
+        if self.photoData.count < 0 {
             print("No photo data resource")
             didFinish()
             return
+        }
+        PHPhotoLibrary.requestAuthorization { status in
+            for i in  0 ... (self.photoData.count - 2){
+                if status == .authorized {
+                    PHPhotoLibrary.shared().performChanges({
+                        let creationRequest = PHAssetCreationRequest.forAsset()
+                        creationRequest.addResource(with: .photo, data: self.photoData[i], options: nil)
+                        
+                }, completionHandler: { _, error in
+                    if let error = error {
+                        print("Error occurred while saving photo to photo library: \(error)")
+                    }
+                    
+                    self.didFinish()
+                }
+                )
+            } else {
+                self.didFinish()
+            }
+                
+            }
         }
         
         PHPhotoLibrary.requestAuthorization { status in
             if status == .authorized {
                 PHPhotoLibrary.shared().performChanges({
-                    let options = PHAssetResourceCreationOptions()
                     let creationRequest = PHAssetCreationRequest.forAsset()
-                    options.uniformTypeIdentifier = self.requestedPhotoSettings.processedFileType.map { $0.rawValue }
-                    creationRequest.addResource(with: .photo, data: photoData, options: options)
+                    creationRequest.addResource(with: .photo, data: self.photoData[self.photoData.count - 2], options: nil)
                     
                     if let livePhotoCompanionMovieURL = self.livePhotoCompanionMovieURL {
                         let livePhotoCompanionMovieFileOptions = PHAssetResourceCreationOptions()
@@ -245,6 +280,7 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
                                                     data: semanticSegmentationMatteData,
                                                     options: nil)
                     }
+
                     // save the depth map
                     if let depthData = self.depthMap {
                         let creationRequest = PHAssetCreationRequest.forAsset()
@@ -252,7 +288,8 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
                                                     data: depthData,
                                                     options: nil)
                     }
-                    
+
+
                 }, completionHandler: { _, error in
                     if let error = error {
                         print("Error occurred while saving photo to photo library: \(error)")

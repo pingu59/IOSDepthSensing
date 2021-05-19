@@ -32,13 +32,14 @@
                                         <color key="selectedSegmentTintColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </segmentedControl>
                                     <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="LmH-E4-q8U">
-                                        <rect key="frame" x="150" y="304" width="427" height="32"/>
+                                        <rect key="frame" x="97" y="304" width="534" height="32"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <segments>
                                             <segment title="Auto BInary"/>
                                             <segment title="Manual Binary"/>
                                             <segment title="Stereo"/>
                                             <segment title="AutoBoth"/>
+                                            <segment title="Profile Binary"/>
                                         </segments>
                                         <color key="selectedSegmentTintColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </segmentedControl>
@@ -147,22 +148,6 @@
                                     <action selector="changeCamera:" destination="BYZ-38-t0r" eventType="touchUpInside" id="3W0-h3-6fc"/>
                                 </connections>
                             </button>
-                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="1" translatesAutoresizingMaskIntoConstraints="NO" id="qQa-JZ-xq2">
-                                <rect key="frame" x="291" y="10" width="230" height="26"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="25" id="5Jk-fK-ABH"/>
-                                </constraints>
-                                <segments>
-                                    <segment title="Speed"/>
-                                    <segment title="Balanced"/>
-                                    <segment title="Quality"/>
-                                </segments>
-                                <color key="tintColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <color key="selectedSegmentTintColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <connections>
-                                    <action selector="togglePhotoQualityPrioritizationMode:" destination="BYZ-38-t0r" eventType="valueChanged" id="gE0-U8-CTj"/>
-                                </connections>
-                            </segmentedControl>
                             <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kbl-qj-uoj" userLabel="SSM">
                                 <rect key="frame" x="64" y="32.666666666666664" width="50" height="49.999999999999993"/>
                                 <constraints>
@@ -215,7 +200,7 @@
                                 <color key="backgroundColor" systemColor="systemRedColor"/>
                                 <color key="tintColor" systemColor="systemPinkColor"/>
                             </view>
-                            <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eI6-gV-W7d" userLabel="Live Photo Mode">
+                            <button opaque="NO" alpha="0.0" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eI6-gV-W7d" userLabel="Live Photo Mode">
                                 <rect key="frame" x="64" y="274" width="50" height="50"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="50" id="2OH-VU-h0R"/>
@@ -250,7 +235,6 @@
                             <constraint firstItem="rUJ-G6-RPv" firstAttribute="centerX" secondItem="eRT-dK-6dM" secondAttribute="centerX" id="7cz-Yw-dIv"/>
                             <constraint firstItem="3eR-Rn-XpZ" firstAttribute="trailing" secondItem="nyU-fN-aJh" secondAttribute="trailing" id="8ud-UI-Sfr"/>
                             <constraint firstItem="uCj-6P-mHF" firstAttribute="height" secondItem="eRT-dK-6dM" secondAttribute="height" id="AEV-ew-H4g"/>
-                            <constraint firstItem="qQa-JZ-xq2" firstAttribute="centerX" secondItem="nyU-fN-aJh" secondAttribute="centerX" id="CCF-nC-Lml"/>
                             <constraint firstItem="k2e-iy-hZx" firstAttribute="centerX" secondItem="9i1-NX-Qxg" secondAttribute="centerX" id="EMU-8C-9iA"/>
                             <constraint firstItem="k2e-iy-hZx" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" constant="50" id="GBQ-Hx-JcI"/>
                             <constraint firstItem="nyU-fN-aJh" firstAttribute="trailing" secondItem="Kbl-qj-uoj" secondAttribute="trailing" constant="30" id="GXb-vB-gbM"/>
@@ -292,9 +276,6 @@
                             <constraint firstItem="nyU-fN-aJh" firstAttribute="bottom" secondItem="uCj-6P-mHF" secondAttribute="bottom" constant="40" id="eWs-co-Aaz"/>
                             <constraint firstItem="3eR-Rn-XpZ" firstAttribute="bottom" secondItem="8bC-Xf-vdC" secondAttribute="bottom" id="ea0-4F-Kd7"/>
                             <constraint firstItem="3eR-Rn-XpZ" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="igk-MQ-CGt"/>
-                            <constraint firstItem="qQa-JZ-xq2" firstAttribute="bottom" secondItem="Pii-2r-R2l" secondAttribute="top" constant="-15" id="jBb-7k-Hkv">
-                                <variation key="heightClass=compact" constant="-5"/>
-                            </constraint>
                             <constraint firstItem="Kbl-qj-uoj" firstAttribute="top" secondItem="9i1-NX-Qxg" secondAttribute="top" id="jNG-AT-7Uc"/>
                             <constraint firstItem="k2e-iy-hZx" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" constant="-38" id="kfM-Ob-SDr"/>
                             <constraint firstItem="Pii-2r-R2l" firstAttribute="top" secondItem="nyU-fN-aJh" secondAttribute="top" constant="40" id="kgV-F4-efV"/>
@@ -372,7 +353,6 @@
                                 <exclude reference="qVc-EN-il5"/>
                                 <exclude reference="OfR-mz-BO3"/>
                                 <include reference="Pm4-eO-sdY"/>
-                                <include reference="jBb-7k-Hkv"/>
                                 <include reference="kgV-F4-efV"/>
                                 <exclude reference="sNQ-wG-QKR"/>
                                 <exclude reference="Oow-A6-mDp"/>
@@ -431,7 +411,6 @@
                         <outlet property="illuminationMode" destination="d82-bY-ok2" id="ipl-CV-d9e"/>
                         <outlet property="livePhotoModeButton" destination="eI6-gV-W7d" id="r9f-cN-YSH"/>
                         <outlet property="photoButton" destination="uCj-6P-mHF" id="Ha8-ua-hxy"/>
-                        <outlet property="photoQualityPrioritizationSegControl" destination="qQa-JZ-xq2" id="pLH-JJ-m0W"/>
                         <outlet property="portraitEffectsMatteDeliveryButton" destination="k2e-iy-hZx" id="bwb-5t-x2l"/>
                         <outlet property="previewView" destination="3eR-Rn-XpZ" id="e7I-nu-L6j"/>
                         <outlet property="recordButton" destination="eRT-dK-6dM" id="iqk-en-NsW"/>

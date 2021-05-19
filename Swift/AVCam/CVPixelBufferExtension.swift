@@ -30,8 +30,16 @@
 
 import AVFoundation
 import Photos
+import Vision
+import UIKit
+
 
 extension CVPixelBuffer {
+    
+    enum CVPixelBufferCopyError: Error {
+        case cannotAllocateBuffer
+    }
+    
     
     private func documentDirectory() -> String {
         let documentDirectory = NSSearchPathForDirectoriesInDomains(.documentDirectory,
@@ -58,7 +66,7 @@ extension CVPixelBuffer {
         }
         
         do {
-            let savedString = try String(contentsOfFile: filePath)
+            try String(contentsOfFile: filePath)
         } catch {
             print("Error reading saved file")
         }
@@ -103,74 +111,59 @@ extension CVPixelBuffer {
         self.save(text: depths,
                   toDirectory: self.documentDirectory(),
                   withFileName: fileName)
-        self.read(fromDocumentsWithFileName: fileName)
+//        self.read(fromDocumentsWithFileName: fileName)
         CVPixelBufferUnlockBaseAddress(self, CVPixelBufferLockFlags(rawValue: 0))
     }
-  
-    func normalize(mask:CVPixelBuffer) {
-    let width = CVPixelBufferGetWidth(self)
-    let height = CVPixelBufferGetHeight(self)
-//    self.printDebugInfo()
-//    mask.printDebugInfo()
-    CVPixelBufferLockBaseAddress(self, CVPixelBufferLockFlags(rawValue: 0));
-    let floatBuffer = unsafeBitCast(CVPixelBufferGetBaseAddress(self), to: UnsafeMutablePointer<float16_t>.self)
-    CVPixelBufferLockBaseAddress(mask, CVPixelBufferLockFlags(rawValue: 0));
-    let maskBuffer = unsafeBitCast(CVPixelBufferGetBaseAddress(mask), to: UnsafeMutablePointer<UInt8>.self)
-    var minPixel: float16_t = 20.0
-    var maxPixel: float16_t = 0.0
-    for y in 0 ..< height {
-      for x in 0 ..< width {
-        let pixel = floatBuffer[y * width + x]
-        if(isCovered(x:x, y:y, mask:maskBuffer)){
-            maxPixel = max(pixel, maxPixel)
-            minPixel = min(pixel, minPixel)
-        }
-      }
-    }
-    minPixel = 2
-    for y in 0 ..< height {
-      for x in 0 ..< width {
-        if(isCovered(x:x, y:y, mask:maskBuffer)){
-            let pixel = floatBuffer[y * width + x]
-            if #available(iOS 14.0, *) {
-                let range = maxPixel - minPixel
-                floatBuffer[y * width + x] =  (pixel - minPixel)/range
-            } else {
-                // Fallback on earlier versions
-            }
-        }else{
-            floatBuffer[y * width + x] = 0
-        }
-      }
-    }
+    
+    func printDebugInfo() {
+        let width = CVPixelBufferGetWidth(self)
+        let height = CVPixelBufferGetHeight(self)
+        let bytesPerRow = CVPixelBufferGetBytesPerRow(self)
+        let totalBytes = CVPixelBufferGetDataSize(self)
 
-    CVPixelBufferUnlockBaseAddress(self, CVPixelBufferLockFlags(rawValue: 0))
-  }
+        print("Depth Map Info: \(width)x\(height)")
+        print(" Bytes per Row: \(bytesPerRow)")
+        print("   Total Bytes: \(totalBytes)")
+    }
     
-  func printDebugInfo() {
-    
-    let width = CVPixelBufferGetWidth(self)
-    let height = CVPixelBufferGetHeight(self)
-    let bytesPerRow = CVPixelBufferGetBytesPerRow(self)
-    let totalBytes = CVPixelBufferGetDataSize(self)
-    
-    print("Depth Map Info: \(width)x\(height)")
-    print(" Bytes per Row: \(bytesPerRow)")
-    print("   Total Bytes: \(totalBytes)")
-  }
-    
-  func isCovered(x:Int, y:Int, mask:UnsafeMutablePointer<UInt8>) -> Bool{
-//    Depth Map Info: 640x480 (max y = 480, max x = 640)
-//     Bytes per Row: 1280
-//       Total Bytes: 614400
-//    Depth Map Info: 1158x1544
-//     Bytes per Row: 1216
-//       Total Bytes: 1877504
-    let scale = (10000 * 1544) / 640
-    let row = 1216
-    let index = ((480 - y) + x * row) * scale
-    let int_index = Int(round(Double(index) / 10000))
-//    return mask[int_index] > 100
-    return true // I have no idea why this does not work :((((
-  }
+    func detectFace(){
+        let image = CIImage(cvPixelBuffer:self)
+        let faceDetection = VNDetectFaceRectanglesRequest()
+        let faceLandmarks = VNDetectFaceLandmarksRequest()
+        let faceLandmarksDetectionRequest = VNSequenceRequestHandler()
+        let faceDetectionRequest = VNSequenceRequestHandler()
+            try? faceDetectionRequest.perform([faceDetection], on: image)
+            if let results = faceDetection.results as? [VNFaceObservation] {
+                if !results.isEmpty {
+                    faceLandmarks.inputFaceObservations = results
+                    try? faceLandmarksDetectionRequest.perform([faceLandmarks], on: image)
+                    if let landmarksResults = faceLandmarks.results as? [VNFaceObservation] {
+                        for observation in landmarksResults {
+                            if(faceLandmarks.inputFaceObservations?.first?.boundingBox) != nil {
+                                if let allPoints = observation.landmarks?.allPoints{
+                                    let width = CVPixelBufferGetWidth(self)
+                                    let height = CVPixelBufferGetHeight(self)
+                                    let map = allPoints.pointsInImage(imageSize: CGSize(width: width, height: height))
+                                    print(map.count)
+                                    let timestamp = NSDate().timeIntervalSince1970
+                                    let fileName = String(timestamp) + "_landmarks.txt"
+                                    var points = ""
+                                    for point:CGPoint in map{
+                                        let x = Int(point.x)
+                                        let y = Int(point.y)
+                                        points += String(describing: x) + ", " + String(describing: y) + "\n"
+                                    }
+                                    self.save(text: points,
+                                              toDirectory: self.documentDirectory(),
+                                              withFileName: fileName)
+//                                    self.read(fromDocumentsWithFileName: fileName)
+                                    
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
 }
