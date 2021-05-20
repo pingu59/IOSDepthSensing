@@ -126,44 +126,44 @@ extension CVPixelBuffer {
         print("   Total Bytes: \(totalBytes)")
     }
     
-    func detectFace(){
-        let image = CIImage(cvPixelBuffer:self)
-        let faceDetection = VNDetectFaceRectanglesRequest()
-        let faceLandmarks = VNDetectFaceLandmarksRequest()
-        let faceLandmarksDetectionRequest = VNSequenceRequestHandler()
-        let faceDetectionRequest = VNSequenceRequestHandler()
-            try? faceDetectionRequest.perform([faceDetection], on: image)
-            if let results = faceDetection.results as? [VNFaceObservation] {
-                if !results.isEmpty {
-                    faceLandmarks.inputFaceObservations = results
-                    try? faceLandmarksDetectionRequest.perform([faceLandmarks], on: image)
-                    if let landmarksResults = faceLandmarks.results as? [VNFaceObservation] {
-                        for observation in landmarksResults {
-                            if(faceLandmarks.inputFaceObservations?.first?.boundingBox) != nil {
-                                if let allPoints = observation.landmarks?.allPoints{
-                                    let width = CVPixelBufferGetWidth(self)
-                                    let height = CVPixelBufferGetHeight(self)
-                                    let map = allPoints.pointsInImage(imageSize: CGSize(width: width, height: height))
-                                    print(map.count)
-                                    let timestamp = NSDate().timeIntervalSince1970
-                                    let fileName = String(timestamp) + "_landmarks.txt"
-                                    var points = ""
-                                    for point:CGPoint in map{
-                                        let x = Int(point.x)
-                                        let y = Int(point.y)
-                                        points += String(describing: x) + ", " + String(describing: y) + "\n"
-                                    }
-                                    self.save(text: points,
-                                              toDirectory: self.documentDirectory(),
-                                              withFileName: fileName)
-//                                    self.read(fromDocumentsWithFileName: fileName)
-                                    
-                                }
-                            }
-                        }
-                    }
-
-                }
-            }
-        }
+//    func detectFace(){
+//        let image = CIImage(cvPixelBuffer:self)
+//        let faceDetection = VNDetectFaceRectanglesRequest()
+//        let faceLandmarks = VNDetectFaceLandmarksRequest()
+//        let faceLandmarksDetectionRequest = VNSequenceRequestHandler()
+//        let faceDetectionRequest = VNSequenceRequestHandler()
+//            try? faceDetectionRequest.perform([faceDetection], on: image)
+//            if let results = faceDetection.results as? [VNFaceObservation] {
+//                if !results.isEmpty {
+//                    faceLandmarks.inputFaceObservations = results
+//                    try? faceLandmarksDetectionRequest.perform([faceLandmarks], on: image)
+//                    if let landmarksResults = faceLandmarks.results as? [VNFaceObservation] {
+//                        for observation in landmarksResults {
+//                            if(faceLandmarks.inputFaceObservations?.first?.boundingBox) != nil {
+//                                if let allPoints = observation.landmarks?.allPoints{
+//                                    let width = CVPixelBufferGetWidth(self)
+//                                    let height = CVPixelBufferGetHeight(self)
+//                                    let map = allPoints.pointsInImage(imageSize: CGSize(width: width, height: height))
+//                                    print(map.count)
+//                                    let timestamp = NSDate().timeIntervalSince1970
+//                                    let fileName = String(timestamp) + "_landmarks.txt"
+//                                    var points = ""
+//                                    for point:CGPoint in map{
+//                                        let x = Int(point.x)
+//                                        let y = Int(point.y)
+//                                        points += String(describing: x) + ", " + String(describing: y) + "\n"
+//                                    }
+//                                    self.save(text: points,
+//                                              toDirectory: self.documentDirectory(),
+//                                              withFileName: fileName)
+////                                    self.read(fromDocumentsWithFileName: fileName)
+//                                    
+//                                }
+//                            }
+//                        }
+//                    }
+//
+//                }
+//            }
+//        }
 }

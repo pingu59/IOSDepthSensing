@@ -142,13 +142,7 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
         if let error = error {
             print("Error capturing photo: \(error)")
         } else {
-            // Create a CIImage from the pixel buffer
-            let ciImage = CIImage(cvPixelBuffer: photo.pixelBuffer!)
-            guard let perceptualColorSpace = CGColorSpace(name: CGColorSpace.sRGB) else { return }
-            guard let imageData = context.heifRepresentation(of: ciImage,
-                                                             format: .BGRA8,
-                                                             colorSpace: perceptualColorSpace) else { return }
-            photoData.append(imageData)
+            photoData.append(photo.fileDataRepresentation()!)
         }
         // A portrait effects matte gets generated only if AVFoundation detects a face.
         if var portraitEffectsMatte = photo.portraitEffectsMatte {
@@ -195,12 +189,6 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
                                                              options: [.depthImage: ciImage]) else { return }
             depthMap = imageData
         }
-        
-        if let photoBuffer = photo.pixelBuffer {
-            photoBuffer.detectFace() //will write to file
-        }
-        
-
     }
     
     /// - Tag: DidFinishRecordingLive
@@ -256,7 +244,7 @@ extension PhotoCaptureProcessor: AVCapturePhotoCaptureDelegate {
             if status == .authorized {
                 PHPhotoLibrary.shared().performChanges({
                     let creationRequest = PHAssetCreationRequest.forAsset()
-                    creationRequest.addResource(with: .photo, data: self.photoData[self.photoData.count - 2], options: nil)
+                    creationRequest.addResource(with: .photo, data: self.photoData[self.photoData.count - 1], options: nil)
                     
                     if let livePhotoCompanionMovieURL = self.livePhotoCompanionMovieURL {
                         let livePhotoCompanionMovieFileOptions = PHAssetResourceCreationOptions()

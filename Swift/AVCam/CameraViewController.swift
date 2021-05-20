@@ -428,7 +428,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                     self.session.sessionPreset = .high
                     if let connection = movieFileOutput.connection(with: .video) {
                         if connection.isVideoStabilizationSupported {
-                            connection.preferredVideoStabilizationMode = .auto
+                            connection.preferredVideoStabilizationMode = .off //.auto
                         }
                     }
                     self.session.commitConfiguration()
@@ -519,7 +519,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                     }
                     if let connection = self.movieFileOutput?.connection(with: .video) {
                         if connection.isVideoStabilizationSupported {
-                            connection.preferredVideoStabilizationMode = .auto
+                            connection.preferredVideoStabilizationMode = .off // .auto
                         }
                     }
                     
@@ -616,16 +616,15 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             }
             
             // Get AVCaptureBracketedStillImageSettings for a set of exposure values.
-            let exposureValues: [Float] = [-2, 0, +2]
+            let exposureValues: [Float] = [-2, -1, 0]
             let makeAutoExposureSettings = AVCaptureAutoExposureBracketedStillImageSettings.autoExposureSettings(exposureTargetBias:)
             let exposureSettings = exposureValues.map(makeAutoExposureSettings)
-            let pixelFormatType = kCVPixelFormatType_32BGRA
-            guard self.photoOutput.availablePhotoPixelFormatTypes.contains(pixelFormatType) else { return }
+            assert(self.photoOutput.availablePhotoCodecTypes.contains(.hevc))
             let photoSettings = AVCapturePhotoBracketSettings(rawPixelFormatType: 0,
-                processedFormat: [kCVPixelBufferPixelFormatTypeKey as String : pixelFormatType],
+                processedFormat: [AVVideoCodecKey: AVVideoCodecType.hevc],
                 bracketedSettings: exposureSettings)
-            photoSettings.isLensStabilizationEnabled =
-                self.photoOutput.isLensStabilizationDuringBracketedCaptureSupported
+            photoSettings.isLensStabilizationEnabled = false
+//                self.photoOutput.isLensStabilizationDuringBracketedCaptureSupported
             
 //            if self.videoDeviceInput.device.isFlashAvailable {
             photoSettings.flashMode = AVCaptureDevice.FlashMode.off
