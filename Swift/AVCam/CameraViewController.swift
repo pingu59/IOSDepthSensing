@@ -602,7 +602,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
     @IBOutlet private weak var photoButton: UIButton!
     
     /// - Tag: CapturePhoto
-    private func capturePhoto_(_ photoButton: UIButton, im: Int? = nil, semaphore: DispatchSemaphore, fin: DispatchSemaphore, change_alpha : Int? = nil) {
+    private func capturePhoto_(_ photoButton: UIButton, im: Int? = nil, photoTakenSemaphore: DispatchSemaphore, fin: DispatchSemaphore,  change_alpha : Int? = nil) {
         /*
          Retrieve the video preview layer's video orientation on the main queue before
          entering the session queue. Do this to ensure that UI elements are accessed on
@@ -616,7 +616,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             }
             
             // Get AVCaptureBracketedStillImageSettings for a set of exposure values.
-            let exposureValues: [Float] = [-2, -1, 0]
+            let exposureValues: [Float] = [-2, -1, 0, 1]
             let makeAutoExposureSettings = AVCaptureAutoExposureBracketedStillImageSettings.autoExposureSettings(exposureTargetBias:)
             let exposureSettings = exposureValues.map(makeAutoExposureSettings)
             assert(self.photoOutput.availablePhotoCodecTypes.contains(.hevc))
@@ -655,61 +655,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             
             photoSettings.photoQualityPrioritization = self.photoQualityPrioritizationMode
             let photoCaptureProcessor = PhotoCaptureProcessor(with: photoSettings, willCapturePhotoAnimation: {
-                // Flash the screen to signal that AVCam took a photo.
-                DispatchQueue.main.async {
-                    let illuminationMode = im ?? self.illuminationMode.selectedSegmentIndex
-                    let screenSize: CGRect = UIScreen.main.bounds
-                    let screenWidth = screenSize.width
-                    let screenHeight = screenSize.height
-                    var white_w = screenWidth
-                    var white_h = screenHeight
-                    var black_w = screenWidth
-                    var black_h = screenHeight
-                    var white_x : CGFloat = 0
-                    var white_y : CGFloat = 0
-                    var black_x : CGFloat = 0
-                    var black_y : CGFloat = 0
-                    print(illuminationMode)
-                    switch illuminationMode
-                    {
-                    case 0 :
-                        black_x = screenWidth/2
-                        white_w = screenWidth/2
-                        black_w = screenWidth/2
-                    case 1 :
-                        white_x = screenWidth/2
-                        white_w = screenWidth/2
-                        black_w = screenWidth/2
-                    case 2 :
-                        black_y = screenHeight/2
-                        white_h = screenHeight/2
-                        black_h = screenHeight/2
-                    case 3:
-                        white_y = screenHeight/2
-                        white_h = screenHeight/2
-                        black_h = screenHeight/2
-                    case 4:
-                        white_h = screenWidth/3
-                        white_w = screenWidth/3
-                        white_x = screenWidth - white_h
-                    case 5:
-                        white_h = screenWidth/3
-                        white_w = screenWidth/3
-                        white_x = 0
-                        white_y = screenHeight/3
-                    case 6:
-                        white_h = screenWidth/3
-                        white_w = screenWidth/3
-                        white_x = screenWidth/3
-                        white_y = screenHeight -  screenWidth/3
-                    default:
-                        break
-                    }
-                    self.view_black.frame = CGRect(x: black_x, y: black_y, width: black_w, height: black_h)
-                    self.view_white.frame = CGRect(x: white_x, y: white_y, width: white_w, height: white_h)
-                    self.view_black.alpha = 1
-                    self.view_white.alpha = 1
-                }
+                
             }, livePhotoCaptureHandler: { capturing in
                 self.sessionQueue.async {
                     if capturing {
@@ -731,7 +677,6 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                 }
             }, completionHandler: { photoCaptureProcessor in
                 // When the capture is complete, remove a reference to the photo capture delegate so it can be deallocated.
-                semaphore.signal()
                 DispatchQueue.main.async {
                     let illuminationMode = im ?? self.illuminationMode.selectedSegmentIndex
                     if im == nil || illuminationMode == change_alpha{
@@ -741,6 +686,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                 self.sessionQueue.async {
                     self.inProgressPhotoCaptureDelegates[photoCaptureProcessor.requestedPhotoSettings.uniqueID] = nil
                 }
+                photoTakenSemaphore.signal()
             }, photoProcessingHandler: { animate in
                 // Animates a spinner while photo is processing
                 DispatchQueue.main.async {
@@ -760,54 +706,140 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             self.photoOutput.capturePhoto(with: photoSettings, delegate: photoCaptureProcessor)
         }
     }
+    
+    func setIllumination(im: Int? = nil, illuminationSemaphore: DispatchSemaphore){
+        DispatchQueue.main.async {
+            let illuminationMode = im ?? self.illuminationMode.selectedSegmentIndex
+            let screenSize: CGRect = UIScreen.main.bounds
+            let screenWidth = screenSize.width
+            let screenHeight = screenSize.height
+            var white_w = screenWidth
+            var white_h = screenHeight
+            var black_w = screenWidth
+            var black_h = screenHeight
+            var white_x : CGFloat = 0
+            var white_y : CGFloat = 0
+            var black_x : CGFloat = 0
+            var black_y : CGFloat = 0
+            print(illuminationMode)
+            switch illuminationMode
+            {
+            case 0 :
+                black_x = screenWidth/2
+                white_w = screenWidth/2
+                black_w = screenWidth/2
+            case 1 :
+                white_x = screenWidth/2
+                white_w = screenWidth/2
+                black_w = screenWidth/2
+            case 2 :
+                black_y = screenHeight/2
+                white_h = screenHeight/2
+                black_h = screenHeight/2
+            case 3:
+                white_y = screenHeight/2
+                white_h = screenHeight/2
+                black_h = screenHeight/2
+            case 4:
+                white_h = screenWidth/3
+                white_w = screenWidth/3
+                white_x = screenWidth - white_h
+            case 5:
+                white_h = screenWidth/3
+                white_w = screenWidth/3
+                white_x = 0
+                white_y = screenHeight/3
+            case 6:
+                white_h = screenWidth/3
+                white_w = screenWidth/3
+                white_x = screenWidth/3
+                white_y = screenHeight -  screenWidth/3
+            default:
+                break
+            }
+            self.view_black.frame = CGRect(x: black_x, y: black_y, width: black_w, height: black_h)
+            self.view_white.frame = CGRect(x: white_x, y: white_y, width: white_w, height: white_h)
+            self.view_black.alpha = 1
+            self.view_white.alpha = 1
+            illuminationSemaphore.signal()
+        }
+    }
+    
     @IBOutlet weak var autoIlluminationMode: UISegmentedControl!
     @IBAction private func capturePhoto(_ photoButton: UIButton) {
-        let semaphore = DispatchSemaphore(value: 0)
+        let photoTakenSemaphore = DispatchSemaphore(value: 0)
+        let illuminationSemaphore = DispatchSemaphore(value: 0)
         let fin = DispatchSemaphore(value: 0)
         switch self.autoIlluminationMode.selectedSegmentIndex
         {
         case 0 :
             DispatchQueue.global().async {
-                for i in -1...3{ //Hack. The first photo cannot guarantee to be correctly illuminated 
+                for i in -1...3{ //Hack. The first photo cannot guarantee to be correctly illuminated
+                    // Flash the screen to signal that AVCam took a photo.
+                    self.setIllumination(im: i, illuminationSemaphore: illuminationSemaphore)
+                    illuminationSemaphore.wait()
                     DispatchQueue.main.async {
-                        self.capturePhoto_(photoButton, im: i, semaphore: semaphore, fin: fin, change_alpha: 3)
+                        self.capturePhoto_(photoButton, im: i, photoTakenSemaphore: photoTakenSemaphore, fin: fin, change_alpha: 3)
                     }
-                    semaphore.wait()
+                    photoTakenSemaphore.wait()
+                    photoTakenSemaphore.wait()
+                    photoTakenSemaphore.wait()
+                    photoTakenSemaphore.wait()
                 }
             }
         case 1 :
-            capturePhoto_(photoButton, semaphore: semaphore, fin: fin)
+            self.setIllumination(illuminationSemaphore: illuminationSemaphore)
+            illuminationSemaphore.wait()
+            capturePhoto_(photoButton, photoTakenSemaphore: photoTakenSemaphore, fin: fin)
             DispatchQueue.global().async {
-                semaphore.wait()
+                photoTakenSemaphore.wait()
+                photoTakenSemaphore.wait()
+                photoTakenSemaphore.wait()
+                photoTakenSemaphore.wait()
             }
         case 2:
             DispatchQueue.global().async {
                 //Hack. The first photo cannot guarantee to be correctly illuminated
                 for i in [-1, 4, 5, 6]{
+                    self.setIllumination(im: i, illuminationSemaphore: illuminationSemaphore)
                     DispatchQueue.main.async {
-                        self.capturePhoto_(photoButton, im: i, semaphore: semaphore, fin: fin, change_alpha: 6)
+                        illuminationSemaphore.wait()
+                        self.capturePhoto_(photoButton, im: i, photoTakenSemaphore: photoTakenSemaphore, fin: fin, change_alpha: 6)
                     }
-                    semaphore.wait()
+                    photoTakenSemaphore.wait()
+                    photoTakenSemaphore.wait()
+                    photoTakenSemaphore.wait()
+                    photoTakenSemaphore.wait()
                 }
             }
         case 3:
             DispatchQueue.global().async {
                 //Hack. The first photo cannot guarantee to be correctly illuminated
                 for i in -1...6{
+                    self.setIllumination(im: i, illuminationSemaphore: illuminationSemaphore)
                     DispatchQueue.main.async {
-                        self.capturePhoto_(photoButton, im: i, semaphore: semaphore, fin: fin, change_alpha: 6)
+                        illuminationSemaphore.wait()
+                        self.capturePhoto_(photoButton, im: i, photoTakenSemaphore: photoTakenSemaphore, fin: fin, change_alpha: 6)
                     }
-                    semaphore.wait()
+                    photoTakenSemaphore.wait()
+                    photoTakenSemaphore.wait()
+                    photoTakenSemaphore.wait()
+                    photoTakenSemaphore.wait()
                 }
             }
         case 4:
             DispatchQueue.global().async {
                 //Hack. The first photo cannot guarantee to be correctly illuminated
                 for i in [-1, 2, 3]{
+                    self.setIllumination(im: i, illuminationSemaphore: illuminationSemaphore)
                     DispatchQueue.main.async {
-                        self.capturePhoto_(photoButton, im: i, semaphore: semaphore, fin: fin, change_alpha: 3)
+                        illuminationSemaphore.wait()
+                        self.capturePhoto_(photoButton, im: i, photoTakenSemaphore: photoTakenSemaphore, fin: fin, change_alpha: 3)
                     }
-                    semaphore.wait()
+                    photoTakenSemaphore.wait()
+                    photoTakenSemaphore.wait()
+                    photoTakenSemaphore.wait()
+                    photoTakenSemaphore.wait()
                 }
             }
             
@@ -1087,7 +1119,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
     private func addObservers() {
         let keyValueObservation = session.observe(\.isRunning, options: .new) { _, change in
             guard let isSessionRunning = change.newValue else { return }
-            let isLivePhotoCaptureEnabled = false //self.photoOutput.isLivePhotoCaptureEnabled
+//            let isLivePhotoCaptureEnabled = false //self.photoOutput.isLivePhotoCaptureEnabled
             let isDepthDeliveryDataEnabled = self.photoOutput.isDepthDataDeliveryEnabled
             let isPortraitEffectsMatteEnabled = self.photoOutput.isPortraitEffectsMatteDeliveryEnabled
             let isSemanticSegmentationMatteEnabled = !self.photoOutput.enabledSemanticSegmentationMatteTypes.isEmpty
