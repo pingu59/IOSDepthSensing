@@ -190,7 +190,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
     
     private var setupResult: SessionSetupResult = .success
     
-    @IBOutlet weak var illuminationMode: UISegmentedControl!
+    @IBOutlet weak var view_multiplex: UIView!
     @IBOutlet weak var view_black: UIView!
     @IBOutlet weak var view_white: UIView!
     @objc dynamic var videoDeviceInput: AVCaptureDeviceInput!
@@ -602,7 +602,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
     @IBOutlet private weak var photoButton: UIButton!
     
     /// - Tag: CapturePhoto
-    private func capturePhoto_(_ photoButton: UIButton, im: Int? = nil, photoTakenSemaphore: DispatchSemaphore, fin: DispatchSemaphore,  change_alpha : Int? = nil) {
+    private func capturePhoto_(_ photoButton: UIButton, im: Int, photoTakenSemaphore: DispatchSemaphore, fin: DispatchSemaphore,  change_alpha : Int? = nil) {
         /*
          Retrieve the video preview layer's video orientation on the main queue before
          entering the session queue. Do this to ensure that UI elements are accessed on
@@ -678,8 +678,8 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             }, completionHandler: { photoCaptureProcessor in
                 // When the capture is complete, remove a reference to the photo capture delegate so it can be deallocated.
                 DispatchQueue.main.async {
-                    let illuminationMode = im ?? self.illuminationMode.selectedSegmentIndex
-                    if im == nil || illuminationMode == change_alpha{
+                    let illuminationMode = im
+                    if illuminationMode == change_alpha{
                         fin.signal()
                     }
                 }
@@ -707,9 +707,9 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
         }
     }
     
-    func setIllumination(im: Int? = nil, illuminationSemaphore: DispatchSemaphore){
+    func setIllumination(im: Int, illuminationSemaphore: DispatchSemaphore){
         DispatchQueue.main.async {
-            let illuminationMode = im ?? self.illuminationMode.selectedSegmentIndex
+            let illuminationMode = im
             let screenSize: CGRect = UIScreen.main.bounds
             let screenWidth = screenSize.width
             let screenHeight = screenSize.height
@@ -754,13 +754,42 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                 white_w = screenWidth/3
                 white_x = screenWidth/3
                 white_y = screenHeight -  screenWidth/3
+            case 7:
+                self.view_multiplex.layer.sublayers?.forEach { $0.removeFromSuperlayer() }
+                self.view_multiplex.frame = CGRect(x: 0, y: 0, width: screenWidth, height: screenHeight)
+                let colors = [UIColor(red: 1, green: 0, blue: 1, alpha: 1).cgColor, UIColor(red: 0, green: 0, blue: 1, alpha: 1).cgColor, UIColor(red: 1, green: 0, blue: 0, alpha: 1).cgColor, UIColor(red: 0, green: 0, blue: 0, alpha: 1).cgColor]
+                let positions = [[0, 0], [0, screenWidth/2], [screenHeight/2, 0], [screenHeight/2, screenWidth/2]]
+                for i in 0...3{
+                    let ca = CALayer()
+                    ca.frame = CGRect(x: positions[i][1], y: positions[i][0], width: screenWidth/2, height: screenHeight/2)
+                    ca.backgroundColor = colors[i]
+                    self.view_multiplex.layer.addSublayer(ca)
+                }
+            case 8:
+                self.view_multiplex.layer.sublayers?.forEach { $0.removeFromSuperlayer() }
+                self.view_multiplex.frame = CGRect(x: 0, y: 0, width: screenWidth, height: screenHeight)
+                let colors = [UIColor(red: 0, green: 0, blue: 0, alpha: 1).cgColor, UIColor(red: 1, green: 0, blue: 0, alpha: 1).cgColor, UIColor(red: 0, green: 0, blue: 1, alpha: 1).cgColor, UIColor(red: 1, green: 0, blue: 1, alpha: 1).cgColor]
+                let positions = [[0, 0], [0, screenWidth/2], [screenHeight/2, 0], [screenHeight/2, screenWidth/2]]
+                for i in 0...3{
+                    let ca = CALayer()
+                    ca.frame = CGRect(x: positions[i][1], y: positions[i][0], width: screenWidth/2, height: screenHeight/2)
+                    ca.backgroundColor = colors[i]
+                    self.view_multiplex.layer.addSublayer(ca)
+                }
             default:
                 break
             }
-            self.view_black.frame = CGRect(x: black_x, y: black_y, width: black_w, height: black_h)
-            self.view_white.frame = CGRect(x: white_x, y: white_y, width: white_w, height: white_h)
-            self.view_black.alpha = 1
-            self.view_white.alpha = 1
+            if illuminationMode == 7 || illuminationMode == 8{
+                self.view_black.alpha = 0
+                self.view_white.alpha = 0
+                self.view_multiplex.alpha = 1
+            }else{
+                self.view_multiplex.alpha = 0
+                self.view_black.frame = CGRect(x: black_x, y: black_y, width: black_w, height: black_h)
+                self.view_white.frame = CGRect(x: white_x, y: white_y, width: white_w, height: white_h)
+                self.view_black.alpha = 1
+                self.view_white.alpha = 1
+            }
             illuminationSemaphore.signal()
         }
     }
@@ -774,12 +803,12 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
         {
         case 0 :
             DispatchQueue.global().async {
-                for i in -1...3{ //Hack. The first photo cannot guarantee to be correctly illuminated
+                for i in [-1, 0, 1, 2, 3, 7, 8, 10]{ //Hack. The first photo cannot guarantee to be correctly illuminated
                     // Flash the screen to signal that AVCam took a photo.
                     self.setIllumination(im: i, illuminationSemaphore: illuminationSemaphore)
                     illuminationSemaphore.wait()
                     DispatchQueue.main.async {
-                        self.capturePhoto_(photoButton, im: i, photoTakenSemaphore: photoTakenSemaphore, fin: fin, change_alpha: 3)
+                        self.capturePhoto_(photoButton, im: i, photoTakenSemaphore: photoTakenSemaphore, fin: fin, change_alpha: 10)
                     }
                     photoTakenSemaphore.wait()
                     photoTakenSemaphore.wait()
@@ -787,17 +816,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                     photoTakenSemaphore.wait()
                 }
             }
-        case 1 :
-            self.setIllumination(illuminationSemaphore: illuminationSemaphore)
-            illuminationSemaphore.wait()
-            capturePhoto_(photoButton, photoTakenSemaphore: photoTakenSemaphore, fin: fin)
-            DispatchQueue.global().async {
-                photoTakenSemaphore.wait()
-                photoTakenSemaphore.wait()
-                photoTakenSemaphore.wait()
-                photoTakenSemaphore.wait()
-            }
-        case 2:
+        case 1:
             DispatchQueue.global().async {
                 //Hack. The first photo cannot guarantee to be correctly illuminated
                 for i in [-1, 4, 5, 6]{
@@ -812,37 +831,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                     photoTakenSemaphore.wait()
                 }
             }
-        case 3:
-            DispatchQueue.global().async {
-                //Hack. The first photo cannot guarantee to be correctly illuminated
-                for i in -1...6{
-                    self.setIllumination(im: i, illuminationSemaphore: illuminationSemaphore)
-                    DispatchQueue.main.async {
-                        illuminationSemaphore.wait()
-                        self.capturePhoto_(photoButton, im: i, photoTakenSemaphore: photoTakenSemaphore, fin: fin, change_alpha: 6)
-                    }
-                    photoTakenSemaphore.wait()
-                    photoTakenSemaphore.wait()
-                    photoTakenSemaphore.wait()
-                    photoTakenSemaphore.wait()
-                }
-            }
-        case 4:
-            DispatchQueue.global().async {
-                //Hack. The first photo cannot guarantee to be correctly illuminated
-                for i in [-1, 2, 3]{
-                    self.setIllumination(im: i, illuminationSemaphore: illuminationSemaphore)
-                    DispatchQueue.main.async {
-                        illuminationSemaphore.wait()
-                        self.capturePhoto_(photoButton, im: i, photoTakenSemaphore: photoTakenSemaphore, fin: fin, change_alpha: 3)
-                    }
-                    photoTakenSemaphore.wait()
-                    photoTakenSemaphore.wait()
-                    photoTakenSemaphore.wait()
-                    photoTakenSemaphore.wait()
-                }
-            }
-            
+
         default:
             break
         }
@@ -852,7 +841,8 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
                 print("here")
                 self.view_black.alpha = 0
                 self.view_white.alpha = 0
-            
+                self.view_multiplex.alpha = 0
+                self.view_multiplex.layer.sublayers?.forEach { $0.removeFromSuperlayer() }
             }
         }
     }
