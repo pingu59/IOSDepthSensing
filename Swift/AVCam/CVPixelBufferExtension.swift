@@ -142,7 +142,7 @@ extension CVPixelBuffer {
 //                            if(faceLandmarks.inputFaceObservations?.first?.boundingBox) != nil {
 //                                if let allPoints = observation.landmarks?.allPoints{
 //                                    let width = CVPixelBufferGetWidth(self)
-//                                    let height = CVPixelBufferGetHeight(self)
+//                                    let height = CVPixelBufferG1vv   etHeight(self)
 //                                    let map = allPoints.pointsInImage(imageSize: CGSize(width: width, height: height))
 //                                    print(map.count)
 //                                    let timestamp = NSDate().timeIntervalSince1970

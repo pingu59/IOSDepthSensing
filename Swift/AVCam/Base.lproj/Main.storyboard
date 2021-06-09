@@ -197,8 +197,8 @@
                                     <action selector="toggleDepthDataDeliveryMode:" destination="BYZ-38-t0r" eventType="touchUpInside" id="iSb-YO-MyR"/>
                                 </connections>
                             </button>
-                            <view opaque="NO" alpha="0.0" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gZ5-ep-QM9">
-                                <rect key="frame" x="286" y="123" width="240" height="128"/>
+                            <view opaque="NO" alpha="0.0" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wZz-LK-AF7">
+                                <rect key="frame" x="0.0" y="0.0" width="812" height="375"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
@@ -206,6 +206,11 @@
                                 <rect key="frame" x="286" y="123" width="240" height="128"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </view>
+                            <view opaque="NO" alpha="0.0" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gZ5-ep-QM9">
+                                <rect key="frame" x="286" y="123" width="240" height="128"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <view alpha="0.0" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ca2-vs-zFf">
                                 <rect key="frame" x="401" y="182" width="10" height="10"/>
@@ -402,6 +407,7 @@
                         <outlet property="resumeButton" destination="FZr-Ip-7WL" id="tX5-Sx-rQK"/>
                         <outlet property="semanticSegmentationMatteDeliveryButton" destination="Kbl-qj-uoj" id="87J-v0-dUz"/>
                         <outlet property="view_black" destination="gZ5-ep-QM9" id="4R6-BT-tl2"/>
+                        <outlet property="view_black_back" destination="wZz-LK-AF7" id="UHc-lL-Txq"/>
                         <outlet property="view_multiplex" destination="Ca2-vs-zFf" id="1ZY-4g-78n"/>
                         <outlet property="view_white" destination="RpU-bu-vFu" id="vWJ-3W-RuX"/>
                     </connections>
