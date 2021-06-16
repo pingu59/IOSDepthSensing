@@ -231,9 +231,6 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
             let depthFormat = availableFormats.filter { format in
                 let pixelFormatType =
                     CMFormatDescriptionGetMediaSubType(format.formatDescription)
-//                print(pixelFormatType  == kCVPixelFormatType_DepthFloat16)
-//                print(pixelFormatType  == kCVPixelFormatType_DepthFloat32) THIS ONE
-//                print("========")
                 return (pixelFormatType == kCVPixelFormatType_DepthFloat16 ||
                         pixelFormatType == kCVPixelFormatType_DepthFloat32)
             }.first
@@ -827,7 +824,7 @@ class CameraViewController: UIViewController, AVCaptureFileOutputRecordingDelega
         {
         case 0 :
             DispatchQueue.global().async {
-                for i in [-1, 0, 0, 1, 2, 3, 9, 10, 7, 7, 8, 100]{ //Hack. The first photo cannot guarantee to be correctly illuminated
+                for i in [-1, 0, 0, 1, 2, 3, 100]{ //Hack. The first photo cannot guarantee to be correctly illuminated
                     // Flash the screen to signal that AVCam took a photo.
                     self.setIllumination(im: i, illuminationSemaphore: illuminationSemaphore)
                     illuminationSemaphore.wait()
