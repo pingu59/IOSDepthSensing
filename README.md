@@ -1,8 +1,8 @@
-# AVCam with binary lighting and true depth camera
+# AVCam with binary lighting and true depth camera & HDR
 
 
 ---------------
-Below is teh original readme from apple offical code
+Below is the original readme from apple offical code
 # AVCam: Building a Camera App
 
 Capture photos with depth data and record video using the front and rear iPhone and iPad cameras.
